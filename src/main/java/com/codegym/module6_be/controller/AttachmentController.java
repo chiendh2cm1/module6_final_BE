@@ -60,6 +60,5 @@ public class AttachmentController {
         Iterable<Attachment> attachments = attachmentService.findAttachmentsByCard_Id(cardId);
         return new ResponseEntity<>(attachments, HttpStatus.OK);
     }
-
-
 }
+
