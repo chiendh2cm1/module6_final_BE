@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ActivityLogRepository extends JpaRepository<ActivityLog, Long> {
     @Query(nativeQuery = true, value = "select * " +
-            "from chienabc.activity_log " +
+            "from activity_log " +
             "where board_id = ?1 " +
             "order by id desc " +
             "limit 99;")
