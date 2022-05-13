@@ -47,7 +47,7 @@ public class UserController {
         } else if (userService.existsByEmail(user.getEmail())) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        user.setImage("https://i.pinimg.com/originals/57/fb/31/57fb3190d0cc1726d782c4e25e8561e9.png");
+        user.setImage("https://static.yeah1.com/uploads/editors/27/2020/03/21/JaZBMzV14fzRI4vBWG8jymplSUGSGgimkqtJakOV.jpeg");
             return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
     }
 
@@ -56,6 +56,8 @@ public class UserController {
         User user1 = userService.update(user);
         return new ResponseEntity<>(user1, HttpStatus.OK);
     }
+
+
 
 
     @PutMapping("/{id}/recover")
