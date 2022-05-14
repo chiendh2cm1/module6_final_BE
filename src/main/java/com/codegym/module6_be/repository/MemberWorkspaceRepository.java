@@ -25,3 +25,4 @@ public interface MemberWorkspaceRepository extends PagingAndSortingRepository<Me
     Page<MemberWorkspace> findAllByWorkspace(Long workspaceId, Pageable pageable);
 
 }
+

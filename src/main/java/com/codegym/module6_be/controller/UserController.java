@@ -1,6 +1,7 @@
 package com.codegym.module6_be.controller;
-
+import com.codegym.module6_be.model.SimpleBoard;
 import com.codegym.module6_be.model.User;
+import com.codegym.module6_be.service.board.BoardService;
 import com.codegym.module6_be.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,9 +16,9 @@ import java.util.Optional;
 public class UserController {
     @Autowired
     private UserService userService;
-//
-//    @Autowired
-//    private BoardService boardService;
+
+    @Autowired
+    private BoardService boardService;
 
     @GetMapping
     public ResponseEntity<Iterable<User>> findAll() {
@@ -47,8 +48,8 @@ public class UserController {
         } else if (userService.existsByEmail(user.getEmail())) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        user.setImage("https://i.pinimg.com/originals/57/fb/31/57fb3190d0cc1726d782c4e25e8561e9.png");
-            return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
+        user.setImage("https://vnn-imgs-a1.vgcloud.vn/image1.ictnews.vn/_Files/2020/03/17/trend-avatar-1.jpg");
+        return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -81,15 +82,15 @@ public class UserController {
         return new ResponseEntity<>(userIterable, HttpStatus.OK);
     }
 
-//    @GetMapping("/{userId}/owned-boards")
-//    public ResponseEntity<Iterable<SimpleBoard>> findAllOwnedBoardsByUserId(@PathVariable Long userId) {
-//        return new ResponseEntity<>(boardService.findAllOwnedBoardsByUserId(userId), HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/{userId}/shared-boards")
-//    public ResponseEntity<Iterable<SimpleBoard>> findAllSharedBoardsByUserId(@PathVariable Long userId) {
-//        return new ResponseEntity<>(boardService.findAllSharedBoardsByUserId(userId), HttpStatus.OK);
-//    }
+    @GetMapping("/{userId}/owned-boards")
+    public ResponseEntity<Iterable<SimpleBoard>> findAllOwnedBoardsByUserId(@PathVariable Long userId) {
+        return new ResponseEntity<>(boardService.findAllOwnedBoardsByUserId(userId), HttpStatus.OK);
+    }
+
+    @GetMapping("/{userId}/shared-boards")
+    public ResponseEntity<Iterable<SimpleBoard>> findAllSharedBoardsByUserId(@PathVariable Long userId) {
+        return new ResponseEntity<>(boardService.findAllSharedBoardsByUserId(userId), HttpStatus.OK);
+    }
     @GetMapping("search/{keyword}/{workspaceId}")
     public ResponseEntity<Iterable<User>> showListMemberWorkspace(@PathVariable String keyword, @PathVariable Long workspaceId) {
         return new ResponseEntity<>(userService.findByKeywordAndWorkspace(keyword, workspaceId), HttpStatus.OK);

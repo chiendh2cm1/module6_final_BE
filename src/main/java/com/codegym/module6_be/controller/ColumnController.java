@@ -59,10 +59,10 @@ public class ColumnController {
     public ResponseEntity<Column> deleteById(@PathVariable Long id) {
         Optional<Column> optionalColumn = columnService.findById(id);
         if (!optionalColumn.isPresent()) {
-            columnService.deleteById(id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
-            return new ResponseEntity<>(optionalColumn.get(), HttpStatus.OK);
+            columnService.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.OK);
         }
     }
 

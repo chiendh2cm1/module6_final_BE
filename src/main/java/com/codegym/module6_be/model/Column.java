@@ -3,7 +3,6 @@ package com.codegym.module6_be.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -18,6 +17,7 @@ public class Column implements Comparable<Column> {
     private Long id;
     private String title;
     @OneToMany
+
     private List<Card> cards;
     private Long position;
 
