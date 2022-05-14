@@ -6,6 +6,7 @@ import com.codegym.module6_be.model.Member;
 import com.codegym.module6_be.model.MemberWorkspace;
 import com.codegym.module6_be.service.board.BoardService;
 import com.codegym.module6_be.service.member.IMemberService;
+import com.codegym.module6_be.service.workspaces.WorkspaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -110,12 +111,12 @@ public class BoardController {
     }
 
 
-//    @Autowired
-//    private WorkspaceService workspaceService;
-//    @GetMapping("/{id}/is-in-workspace")
-//    public ResponseEntity<Boolean> isBoardInWorkspace(@PathVariable Long id) {
-//        return new ResponseEntity<>(workspaceService.isBoardInWorkspace(id), HttpStatus.OK);
-//    }
+    @Autowired
+    private WorkspaceService workspaceService;
+    @GetMapping("/{id}/is-in-workspace")
+    public ResponseEntity<Boolean> isBoardInWorkspace(@PathVariable Long id) {
+        return new ResponseEntity<>(workspaceService.isBoardInWorkspace(id), HttpStatus.OK);
+    }
     @PostMapping("/delete")
     public ResponseEntity<MemberWorkspace> deleteAllById(@RequestBody Iterable<Board> boards) {
         for (Board board : boards) {
