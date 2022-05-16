@@ -23,7 +23,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {   // thực 
     private UserServiceImpl userService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException
+    {
         try {
             String jwt = getJwtFormRequest(request);
             if (jwt != null && jwtService.validateJwtToken(jwt)) {

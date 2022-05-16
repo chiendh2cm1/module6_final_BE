@@ -1,11 +1,16 @@
 package com.codegym.module6_be.controller;
+
+import com.codegym.module6_be.model.DTO.ChangePassword;
 import com.codegym.module6_be.model.SimpleBoard;
 import com.codegym.module6_be.model.User;
+import com.codegym.module6_be.model.UserPrincipal;
 import com.codegym.module6_be.service.board.BoardService;
 import com.codegym.module6_be.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -19,6 +24,9 @@ public class UserController {
 
     @Autowired
     private BoardService boardService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping
     public ResponseEntity<Iterable<User>> findAll() {
@@ -53,14 +61,14 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> update( @RequestBody User user) {
+    public ResponseEntity<User> update(@RequestBody User user) {
         User user1 = userService.update(user);
         return new ResponseEntity<>(user1, HttpStatus.OK);
     }
 
 
     @PutMapping("/{id}/recover")
-    public ResponseEntity<User> updateRecoveredUser( @RequestBody User user) {
+    public ResponseEntity<User> updateRecoveredUser(@RequestBody User user) {
         User user1 = userService.save(user);
         return new ResponseEntity<>(user1, HttpStatus.OK);
     }
@@ -91,8 +99,22 @@ public class UserController {
     public ResponseEntity<Iterable<SimpleBoard>> findAllSharedBoardsByUserId(@PathVariable Long userId) {
         return new ResponseEntity<>(boardService.findAllSharedBoardsByUserId(userId), HttpStatus.OK);
     }
+
     @GetMapping("search/{keyword}/{workspaceId}")
     public ResponseEntity<Iterable<User>> showListMemberWorkspace(@PathVariable String keyword, @PathVariable Long workspaceId) {
         return new ResponseEntity<>(userService.findByKeywordAndWorkspace(keyword, workspaceId), HttpStatus.OK);
+    }
+
+    @PostMapping("/set-password")
+    public ResponseEntity<?> setPassword(@RequestBody ChangePassword changePassword,  Authentication authentication) {
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        User user = userService.findByUsername(userPrincipal.getUsername());
+        if (passwordEncoder.matches(changePassword.getOldPassword(), user.getPassword())) {
+            user.setPassword(passwordEncoder.encode(changePassword.getNewPassword()));
+            userService.update(user);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }

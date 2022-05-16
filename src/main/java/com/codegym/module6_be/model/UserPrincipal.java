@@ -4,9 +4,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class UserPrincipal implements UserDetails {
     private Long id;
@@ -15,38 +15,31 @@ public class UserPrincipal implements UserDetails {
 
     private String password;
 
-    private String image;
-
-    private String nickname;
-
     private Collection<? extends GrantedAuthority> roles;
-    public UserPrincipal(Long id, String username, String password, String image, String nickname,
-                         Collection<? extends GrantedAuthority> roles){
+
+    public UserPrincipal() {
+    }
+
+    public UserPrincipal(Long id, String username, String password, Collection<? extends GrantedAuthority> roles) {
         this.id = id;
         this.username = username;
         this.password = password;
-        this.image = image;
-        this.nickname = nickname;
         this.roles = roles;
     }
 
-
-
-    public static UserDetails build(User user) {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        for (Role roles : user.getRoles()){
-            authorities.add(new SimpleGrantedAuthority(roles.getName()));
-        }
-
+    public static UserPrincipal build(User user) {
+        List<GrantedAuthority> authorities = user.getRoles().stream().map(role ->
+                new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
         return new UserPrincipal(
                 user.getId(),
                 user.getUsername(),
                 user.getPassword(),
-                user.getImage(),
-                user.getNickname(),
                 authorities
         );
+    }
 
+    public Long getId() {
+        return id;
     }
 
     @Override
@@ -56,12 +49,12 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getPassword() {
-        return password;
+        return this.password;
     }
 
     @Override
     public String getUsername() {
-        return username;
+        return this.username;
     }
 
     @Override
@@ -82,5 +75,18 @@ public class UserPrincipal implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserPrincipal)) return false;
+        UserPrincipal that = (UserPrincipal) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

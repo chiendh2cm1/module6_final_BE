@@ -5,8 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
+import java.util.Optional;
+
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+    @Transactional
     User findByUsername(String username);
     User findByUsernameAndAndEmail(String username, String email);
     @Query(value = "select * from user u " + "where u.username " + "like ?1 or u.nickname like ?1", nativeQuery = true)

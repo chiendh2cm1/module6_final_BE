@@ -1,5 +1,7 @@
 package com.codegym.module6_be.controller;
 
+import com.codegym.module6_be.model.Board;
+import com.codegym.module6_be.model.MemberWorkspace;
 import com.codegym.module6_be.model.Notification;
 import com.codegym.module6_be.service.notification.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,4 +67,13 @@ public class NotificationController {
         notificationService.allRead(userId);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
+    @PostMapping("/delete")
+    public ResponseEntity<Notification> deleteAllById(@RequestBody Iterable<Notification> notificationss) {
+        for (Notification notification : notificationss) {
+            notificationService.deleteById(notification.getId());
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 }

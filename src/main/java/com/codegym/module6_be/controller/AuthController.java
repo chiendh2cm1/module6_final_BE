@@ -1,8 +1,8 @@
 package com.codegym.module6_be.controller;
 
 import com.codegym.module6_be.model.JwtResponse;
-import com.codegym.module6_be.model.Payload.LoginRequest;
 import com.codegym.module6_be.model.User;
+import com.codegym.module6_be.model.UserPrincipal;
 import com.codegym.module6_be.service.JwtService;
 import com.codegym.module6_be.service.user.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,14 +36,14 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    private ResponseEntity<?> login(@RequestBody LoginRequest user) {
+    private ResponseEntity<?> login(@RequestBody User user) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         String jwt = jwtService.generateTokenLogin(authentication);
+        UserPrincipal userPrincipal =(UserPrincipal) authentication.getPrincipal();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        User currentUser = userService.findByUsername(user.getUsername());
+        User currentUser = userService.findByUsername(userPrincipal.getUsername());
 
         return ResponseEntity.ok(new JwtResponse(jwt, currentUser.getId(), userDetails.getUsername(), userDetails.getAuthorities()));
 

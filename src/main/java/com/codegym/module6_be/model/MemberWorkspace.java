@@ -15,7 +15,7 @@ public class MemberWorkspace {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     private User user;
 
     private String role;

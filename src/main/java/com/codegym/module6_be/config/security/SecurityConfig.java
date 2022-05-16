@@ -2,6 +2,7 @@ package com.codegym.module6_be.config.security;
 
 import com.codegym.module6_be.config.custom.CustomAccessDeniedHandler;
 import com.codegym.module6_be.config.custom.RestAuthenticationEntryPoint;
+import com.codegym.module6_be.config.filter.JwtAuthenticationFilter;
 import com.codegym.module6_be.service.role.IRolesService;
 import com.codegym.module6_be.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -34,6 +36,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public AuthenticationManager authenticationManager() throws Exception {
         return super.authenticationManager();
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter();
     }
 
     @Bean
@@ -64,13 +71,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
 //                .antMatchers("/", "/login", "/users/**").permitAll()
                 .antMatchers("/**").permitAll()
-                .anyRequest().authenticated()
                 .and().csrf().disable()
                 .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
-//        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-//                .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler());
-        http.sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler());
         http.cors();
     }
 
