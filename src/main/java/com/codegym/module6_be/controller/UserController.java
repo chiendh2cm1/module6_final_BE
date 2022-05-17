@@ -1,6 +1,7 @@
 package com.codegym.module6_be.controller;
 
 import com.codegym.module6_be.model.DTO.ChangePassword;
+import com.codegym.module6_be.model.DTO.ChangePasswordForm;
 import com.codegym.module6_be.model.SimpleBoard;
 import com.codegym.module6_be.model.User;
 import com.codegym.module6_be.model.UserPrincipal;
@@ -9,7 +10,10 @@ import com.codegym.module6_be.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +23,11 @@ import java.util.Optional;
 @RequestMapping("/users")
 @CrossOrigin("*")
 public class UserController {
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+
     @Autowired
     private UserService userService;
 
@@ -106,15 +115,16 @@ public class UserController {
     }
 
     @PostMapping("/set-password")
-    public ResponseEntity<?> setPassword(@RequestBody ChangePassword changePassword,  Authentication authentication) {
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        User user = userService.findByUsername(userPrincipal.getUsername());
-        if (passwordEncoder.matches(changePassword.getOldPassword(), user.getPassword())) {
-            user.setPassword(passwordEncoder.encode(changePassword.getNewPassword()));
-            userService.update(user);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
+    public ResponseEntity<?> setPassword(@RequestBody ChangePasswordForm changePasswordForm) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(changePasswordForm.getUsername(), changePasswordForm.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        User user = userService.findByUsername(changePasswordForm.getUsername());
+        if (changePasswordForm.getPassword().equals(changePasswordForm.getNewPassword())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        user.setPassword(changePasswordForm.getNewPassword());
+        return new ResponseEntity<>(userService.save(user), HttpStatus.OK);
     }
+
 }
