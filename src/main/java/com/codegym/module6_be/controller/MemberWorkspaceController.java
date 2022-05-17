@@ -1,6 +1,9 @@
 package com.codegym.module6_be.controller;
 
 import com.codegym.module6_be.model.MemberWorkspace;
+import com.codegym.module6_be.model.User;
+import com.codegym.module6_be.model.Workspace;
+import com.codegym.module6_be.service.email.EmailService;
 import com.codegym.module6_be.service.memberworkspace.MemberWorkspaceService;
 import com.codegym.module6_be.service.user.UserService;
 import com.codegym.module6_be.service.workspaces.WorkspaceService;
@@ -13,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +26,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/member-workspace")
 public class MemberWorkspaceController {
-//    @Autowired
-//    EmailService emailService;
+    @Autowired
+    EmailService emailService;
 
     @Autowired
     private MemberWorkspaceService memberWorkspaceService;
@@ -36,15 +40,15 @@ public class MemberWorkspaceController {
     public ResponseEntity<Iterable<MemberWorkspace>> showListTag() {
         return new ResponseEntity<>(memberWorkspaceService.findAll(), HttpStatus.OK);
     }
-    @PostMapping("")
-    public ResponseEntity<MemberWorkspace> saveTag(@RequestBody MemberWorkspace memberWorkspace) {
-////        try {
-//            User sender = userService.findById(senderId).get();
-//            Workspace workspace = workspaceService.findById(workspaceId).get();
-//////            emailService.sendVerificationEmail(memberWorkspace.getUser(),sender,workspace);
-////        } catch (MessagingException e) {
-////            e.printStackTrace();
-////        }
+    @PostMapping("/{senderId}/{workspaceId}")
+    public ResponseEntity<MemberWorkspace> saveTag(@PathVariable Long senderId, @PathVariable Long workspaceId, @RequestBody MemberWorkspace memberWorkspace) {
+        try {
+            User sender = userService.findById(senderId).get();
+            Workspace workspace = workspaceService.findById(workspaceId).get();
+            emailService.sendVerificationEmail(memberWorkspace.getUser(),sender,workspace);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
         return new ResponseEntity<>(memberWorkspaceService.save(memberWorkspace), HttpStatus.CREATED);
     }
     @GetMapping("/{id}")
